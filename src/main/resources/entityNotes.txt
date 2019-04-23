@@ -1,0 +1,151 @@
+SpringDataJpa下的实体类使用注解都是javax.persistence包下的注解。
+
+1、实体类中常用注解
+
+【1、@Entity和@Table(name="")注解】
+
+ @Entity和@Table(name="")注解：表明这是一个实体类。一般用于jpa这两个注解一般一块使用，但是如果表名和实体类名相同的话，
+ @Table注解可以省略。
+
+【2、@Id注解】
+
+@Id表示该属性为主键；
+
+【3、自定义主键生成策略@GeneratedValue】
+
+     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "repair_seq")：表示主键生成策略是
+     sequence（可以为Auto、IDENTITY、native等，Auto表示可在多个数据库间切换），指定sequence的名字是repair_seq。
+ 自定义主键生成策略需要使用@GeneratedValue注解和@GenericGenerator注解。
+
+ 【4、@Column注解】
+
+ @Column表示列的说明，如果字段名与列名相同，则可以省略。@Column注解属性详细说明
+
+ （1）name属性：被标注字段在数据库表中所对应字段的名称；
+ （2）length属性：表示该字段的长度，当字段的类型为varchar时，该属性才有效果，默认为255个字符；
+ （3）nullable属性：表示该字段是否可以为null值，默认是true。
+ （4）unique属性：表示该字段是否为唯一标识，默认fasle。
+ （5）precision和scale属性：precision属性和scale属性表示精度，当字段类型为double时，precision表示数值的总长度，
+     scale表示小数点所占的位数。
+
+ 【5、@Transient注解注解】
+   @Transient表示该属性并非一个到数据库表的字段的映射,ORM框架将忽略该属性.如果一个属性并非数据库表的字段映射,
+   就务必将其标示为@Transient,否则,ORM框架默认其注解为@Basic。
+
+ 【6、@Temporal注解】
+
+ @Temporal注解表示格式化时间日期。有三种，默认是@Temporal(TemporalType.TIMESTAMP)。具体如下：
+ （1）@Temporal(TemporalType.DATE)：日期，页面取得结果格式如：2016-08-05
+ （2）@Temporal(TemporalType.TIME)：时间，页面取得结果是： 13:46:25
+ （3）@Temporal(TemporalType.TIMESTAMP):时间和日期，页面取得结果是：2016-08-05 13:46:25
+      @JsonView注解用来过滤序列化对象的字段属性，简单来说就是定义一个标签，根据controller的JsonView属性，
+      将实体类中不同标签的属性进行分类显示。
+
+ 【7、@OneToOne一对一注解】
+
+ @OneToOne注解说明：
+ （1）targetEntity属性表示默认关联的实体类型，默认为当前标注的实体类；
+ （2）cascade属性表示与此实体一对一关联的实体的联级样式类型。联级样式上当对实体进行操作时的策略。
+ 说明：在定义关系时经常会涉及是否定义Cascade(级联处理)属性，担心造成负面影响. 不定义,则对关系表不会产生任何影响
+    ①CascadeType.PERSIST （级联新建）
+    ②CascadeType.REMOVE （级联删除）
+    ③CascadeType.REFRESH （级联刷新）
+    ④CascadeType.MERGE （级联更新）中选择一个或多个。
+    ⑤还有一个选择是使用CascadeType.ALL ，表示选择全部四项
+ （3）fetch属性是该实体的加载方式，有两种：LAZY和EAGER。
+ （4）optional属性表示关联的实体是否能够存在null值。默认为true，表示可以存在null值。如果为false，则要同时配合使用@JoinColumn标记。
+ （5）mappedBy属性用于双向关联实体时，标注在不保存关系的实体中。
+
+ 【8、@OneToMany一对多注解】
+
+ 例如一个公司对应多个部门，可以通过公司获取到其下面的多个部门信息。即公司表与部门表之间是一对多的关系；@OneToMany注解说明
+ （1）targetEntity属性表示默认关联的实体类型，默认为当前标注的实体类；因为一对多的实体集合时保存在集合类中，
+ 因此必须指明集合类中保存的具体类型。
+ （2）mappedBy属性用于双向关联实体时使用。
+
+ 【9、@JoinColumn注解】
+
+ @JoinColumn（name=”loginId”）:在一对一关系时：本表中指向另一个表的外键。一对多关系时：另一个表指向本表的外键。该注解属性详细说明：
+
+ （1）name属性是用来标记表中对应的字段的名称。如果不设置name的值，默认情况下，name的取值规则如下：
+     name=关联的表的名称 + "_" + 关联表主键的字段名
+ （2）默认情况下，关联的实体的主键一般用来做外键的。如果不想用主键作为外键，则需要设置referencedColumnName属性，
+ 如@JoinColumn(name="address_id", referencedColumnName="ref_id")
+ 【注意】@JoinColumn可以与@OneToOne、@ManyToOne或@ManyToMany标记同时使用。
+ 1）一对一和多对一的@JoinColumn注解的都是在“主控方”，都是本表指向外表的外键名称。
+ 2）一对多的@JoinColumn注解在“被控方”，即一的一方，指的是外表中指向本表的外键名称。
+ 3）多对多中，joinColumns写的都是本表在中间表的外键名称，inverseJoinColumns写的是另一个表在中间表的外键名称。
+
+ 【10、@JoinTable中间表注解】
+
+ @JoinTable注解属性说明：
+ （1）name属性为连接两个表的表名称。若不指定，则使用默认的表名称，格式如下：    "表名1" + "_" + "表名2"
+ （2）joinColumn属性表示，在保存关系的表中，所保存关联关系的外键的字段，并配合@JoinColumn标记使用；
+ （3）inverseJoinColumn属性与joinColumn类似，它保存的是保存关系的另外一个外键字段；
+ （4）catalog和schema属性表示实体指定点目录名称或数据库名称；
+ （5）uniqueConstraints属性表示该实体所关联的唯一约束条件，一个实体可以有多个唯一约束条件，默认没有约束；
+ 【注意】：@JoinTable不仅能够定义一对多的关联，也可以定义多对多表的关联。
+
+#角色表Role与资源表Resource之间是多对多的关系，之间的中间表是sys_role_resource。
+------------------------------------------------------------------------------------
+@ManyToMany(targetEntity=Resource.class)
+@JoinTable(name="sys_role_resource",joinColumns=@JoinColumn(name="role_id"),inverseJoinColumns=@JoinColumn(name="resource_id"))
+private Set<Resource> resources=new HashSet<Resource>(0);
+------------------------------------------------------------------------------------------
+#@JoinTable 描述了多对多关系的数据表关系。name 属性指定中间表名称，joinColumns 定义中间表与Resource资源表的外键关系。
+上面的代码中，中间表sys_role_resource的role_id 列是Role角色表的主键列对应的中间表外键列，inverseJoinColumns
+属性定义了中间表与另外一端(Resource)的外键关系。
+
+ 【@IdClass注解】
+ @IdClass注解就是复合主键时候使用，复合主键由多个主键字段组成。
+
+@Entity @IdClass(ProjectId.class)
+public class Project {
+    @Id int departmentId;
+    @Id long projectId;
+}
+//这里主键是由departmentId和projectId字段共同组成的主键
+
+
+2、应用
+2.1、多对多个关系应用
+我们这里的就用角色表与菜单表来进行说明，
+
+#角色表
+
+@Entity
+@Table(name="t_roles")
+public class Roles {
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="roleid")
+	private Integer roleid;
+	@Column(name="rolename")
+	private String rolename;
+	@ManyToMany(cascade=CascadeType.PERSIST,fetch=FetchType.EAGER)
+	//@JoinTable:映射中间表
+	//joinColumns:当前表中的主键所关联的中间表中的外键字段
+	@JoinTable(name="t_roles_menus",joinColumns=@JoinColumn(name="role_id"),inverseJoinColumns=@JoinColumn(name="menu_id"))
+	private Set<Menus> menus = new HashSet<>();
+...................get和set方法省略......................
+}
+
+
+
+#菜单表
+@Entity
+@Table(name="t_menus")
+public class Menus {
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="menusid")
+	private Integer menusid;
+	@Column(name="menusname")
+	private String menusname;
+	@Column(name="menusurl")
+	private String menusurl;
+	@Column(name="fatherid")
+	private Integer fatherid;
+	@ManyToMany(mappedBy="menus")
+	private Set<Roles> roles = new HashSet<>();
+}
