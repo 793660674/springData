@@ -25,12 +25,12 @@ public interface SbootRepositoty extends JpaRepository<Sboot,Integer>{
      */
     @Query(value = "select s from Sboot s where  s.test1 = ?1 AND s.test2 = ?2")
     List<Sboot> findList1(String test1,String test2);
-
+    
     @Query(value = "select s from Sboot s where  s.test1 = :test1 AND s.test2 = :test2")
     List<Sboot> findList2(@Param("test1")String test1, @Param("test2")String test2);
 
     //模糊查询
-    @Query("SELECT p FROM Person p WHERE p.lastName LIKE ?1 OR p.email LIKE ?2")
+    @Query(value = "SELECT p FROM Sboot p WHERE p.test1 LIKE ?1 OR p.test2 LIKE ?2")
     List<Sboot> findList3(String test1,String test2);//test1 和test2 传过来的时候 就带有百分号
 
     @Query(value = "select s from Sboot s where  s.test1 LIKE %:test1% AND s.test2 LIKE %:test2%")

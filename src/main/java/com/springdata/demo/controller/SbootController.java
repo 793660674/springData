@@ -2,6 +2,7 @@
 package com.springdata.demo.controller;
 
 import com.springdata.demo.popj.Sboot;
+import com.springdata.demo.popj.Test;
 import com.springdata.demo.repository.SbootRepositoty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,10 +43,12 @@ public class SbootController {
 
     @GetMapping(value = "/add")
     public Sboot add(){
+        Test t=new Test();
         Sboot sb=new Sboot();
         sb.setTest1("ceshi");
         sb.setTest2("ceshi2");
         sbootRepositoty.save(sb);
         return sb;
     }
+
 }

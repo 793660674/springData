@@ -19,7 +19,7 @@ import javax.persistence.*;
 @Table(name = "sboot")
 public class Sboot {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String test1;
